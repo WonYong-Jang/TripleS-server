@@ -1,8 +1,10 @@
 package com.triples.project.scheduler.crawling;
 
 import com.triples.project.scheduler.crawling.festa.FestaJob;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -10,20 +12,20 @@ import javax.annotation.PostConstruct;
 /**
  *  스케줄러
  */
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class CrawlingScheduler {
-    private SchedulerFactory schedulerFactory;
-    private Scheduler scheduler;
+
+    private final Scheduler scheduler;
 
     @PostConstruct
     public void start() throws SchedulerException {
 
-        schedulerFactory = new StdSchedulerFactory();
-        scheduler = schedulerFactory.getScheduler();
-        scheduler.start();
-
+        log.info("JobScheduler start");
         //job 지정
         JobDetail job = JobBuilder.newJob(FestaJob.class).withIdentity("festa").build();
+        //JobDetail job2 = JobBuilder.newJob(FestaJob2.class).withIdentity("festa2").build();
 
         //trigger 생성
         Trigger trigger = TriggerBuilder.newTrigger().
@@ -32,6 +34,17 @@ public class CrawlingScheduler {
 //        Trigger trigger = TriggerBuilder.newTrigger().startAt(startDateTime).endAt(EndDateTime)
 //                .withSchedule(CronScheduleBuilder.cronSchedule("*/1 * * * *")).build();
 
+//        Trigger trigger2 = TriggerBuilder.newTrigger().
+//                withSchedule(CronScheduleBuilder.cronSchedule("5 * * * * ?")).build();
+
         scheduler.scheduleJob(job, trigger);
+        //scheduler.scheduleJob(job2, trigger2);
+    }
+    // *  *   *   *   *   *     *
+    //초  분  시  일  월  요일  년도(생략가능)
+    public Trigger buildCronJobTrigger(String scheduleExp) {
+        return TriggerBuilder.newTrigger()
+                .withSchedule(CronScheduleBuilder.cronSchedule(scheduleExp))
+                .build();
     }
 }

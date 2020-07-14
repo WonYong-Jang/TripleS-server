@@ -33,13 +33,13 @@ public class FestaJobTest {
     @Test
     public void test() {
 
+
         String url = "https://festa.io/";
         driver.get(url);
 
         List<WebElement> list = driver.findElements(By.xpath("//a[@class='EventCardMobile__Card-sc-1do1vt8-0 dHIdtb']"));
-
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>" + list.size());
         for(WebElement target : list) {
-
 
             String link = target.findElement(By.xpath(".//div[@src]")).getAttribute("src");;
 
@@ -49,9 +49,6 @@ public class FestaJobTest {
             System.out.println(title);
             System.out.println(image);
         }
-
-
-
     }
 
 }
